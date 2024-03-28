@@ -65,8 +65,10 @@ func (mc *Microcontroller) stmInit() error {
 
 // enterSTBL will execute the GPIO sequence to enter the STM bootloader
 func (mc *Microcontroller) enterSTBL() {
-	mc.pinPower.High()
 	mc.pinPower.Low()
+
+	// BOOT0 low and BOOT1 high when reapplying PWR will go into the bootloader
+	// mode on STM32 chips
 	mc.pinBoot0.High()
 	mc.pinBoot1.Low()
 	time.Sleep(10 * time.Millisecond)

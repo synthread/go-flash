@@ -2,6 +2,7 @@ package flash
 
 import (
 	"github.com/piotrjaromin/gpio"
+	"github.com/pkg/errors"
 	"go.bug.st/serial"
 )
 
@@ -58,6 +59,10 @@ func NewMicrocontroller(c *Config) (*Microcontroller, error) {
 	mc := &Microcontroller{
 		config:      c,
 		stmCmdCodes: commandCodeMap{},
+	}
+
+	if err := mc.setupPins(); err != nil {
+		return nil, errors.Wrap(err, "could not setup pins")
 	}
 
 	return mc, nil
@@ -117,4 +122,10 @@ func (mc *Microcontroller) BaudRate() int {
 		return mc.config.BootloaderBaud
 	}
 	return DefaultBaud
+}
+
+// Reset will force a power cycle on the microcontroller
+func (mc *Microcontroller) Reset() {
+	// TODO: check if this is a STM
+	mc.exitSTBL()
 }

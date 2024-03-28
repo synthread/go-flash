@@ -13,10 +13,6 @@ var ErrTimeout = errors.New("timed out reading from microcontroller")
 var ErrClosed = errors.New("serial port is closed")
 
 func (mc *Microcontroller) Open() (err error) {
-	if err = mc.setupPins(); err != nil {
-		return errors.Wrap(err, "could not setup pins")
-	}
-
 	mc.ttyPort, err = serial.Open(mc.TTY(), &serial.Mode{
 		BaudRate: mc.BaudRate(),
 		DataBits: 8,
@@ -52,13 +48,6 @@ func (mc *Microcontroller) Close() error {
 		mc.ttyPort.Close()
 		mc.ttyPort = nil
 	}
-
-	// resets the pins to a running state
-	mc.pinBoot0.Cleanup()
-	mc.pinBoot1.Cleanup()
-	mc.pinPower.Cleanup()
-
-	logrus.Debug("mcu close")
 
 	return nil
 }
